@@ -17,17 +17,11 @@ class WebApp(object):
     def go_to(self):
         self.driver.get(self.app_url.get_url())
 
-    def wait_delegate(self, new_delegate=None):
-        if new_delegate is None:
-            return self.wait_delegate
-        else:
-            assert isinstance(new_delegate, WaitDelegate)
-            self.wait_delegate = new_delegate
+    def set_wait_delegate(self, new_delegate=None):
+        assert isinstance(new_delegate, WaitDelegate)
+        self.wait_delegate = new_delegate
 
-    def default_wait(self, wait_in_seconds=None):
-        if waitInSeconds is None:
-            return self.default_wait
-        else:
-            assert wait_in_seconds >= 0
-            self.default_wait = wait_in_seconds
+    def set_default_wait(self, wait_in_seconds=None):
+        assert wait_in_seconds >= 0
+        self.default_wait = wait_in_seconds
 

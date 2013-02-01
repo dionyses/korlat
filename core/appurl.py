@@ -1,6 +1,5 @@
 
 
-
 HTTP_PREFIX = "http://"
 HTTPS_PREFIX = "https://"
 

@@ -16,7 +16,7 @@ class Element(object):
             self.web_app = container_or_web_app
 
         self.strategy = strategy
-        self.identifier = identifier
+        self._identifier = identifier
         self.label = label
 
         self.required = False
@@ -59,9 +59,9 @@ class Element(object):
 
     def get_identifier(self):
         if self.parent is not None:
-            return xpath(self.parent.strategy, self.parent.get_identifier()) + xpath(self.strategy, self.identifier, self.content)
+            return xpath(self.parent.strategy, self.parent.get_identifier()) + xpath(self.strategy, self._identifier, self.content)
         else:
-            return self.identifier % tuple(self.content)
+            return self._identifier % tuple(self.content)
 
     def type(self, keys):
         self.get_web_element().send_keys(keys)
