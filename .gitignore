@@ -1,7 +1,17 @@
+# python generated
 *.py[cod]
 
 # C extensions
 *.so
+
+# vim generated
+*.swp
+
+# other generated
+*.log
+
+# docs
+doc/
 
 # Packages
 *.egg
