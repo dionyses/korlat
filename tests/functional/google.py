@@ -3,9 +3,9 @@ from abstraction.container import Container
 from core.strategy import ID, XPATH
 
 
-class GoogleLanding(Container):
+class Google(Container):
     def __init__(self, *args, **kwargs):
-        super(GoogleLanding, self).__init__(*args, **kwargs)
+        super(Google, self).__init__(*args, **kwargs)
 
     def build_elements(self):
         self.put(Element(self, ID, "gbqfq", "search_box")) \
