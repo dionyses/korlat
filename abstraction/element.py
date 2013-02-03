@@ -1,4 +1,5 @@
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.webdriver.support.wait import WebDriverWait
 
 from container import Container
 from core.strategy import xpath_of, ID, XPATH
@@ -173,6 +174,64 @@ class Element(object):
         else:
             return self._identifier % tuple(self.content)
 
+    def _wait_until_exists_or_not(self, exists, wait_in_seconds=None):
+        """Wait until this Element exists or not.
+
+        :returns: this Element.
+        """
+        if wait_in_seconds is None:
+            wait_in_seconds = self.web_app.default_wait
+
+        assert wait_in_seconds > 0
+        ignoring = [
+            StaleElementReferenceException,
+            NonExistentElement
+        ]
+        wait = WebDriverWait(self.web_app.driver, wait_in_seconds, .25, ignoring)
+
+        if exists:
+            wait.until(self._exists_for_wait)
+        else:
+            wait.until_not(self._exists_for_wait)
+
+        return self
+
+    def wait_until_exists(self, wait_in_seconds=None):
+        """Wait until this Element exists on the page.
+
+        :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
+        :type wait_in_seconds: int
+        :returns: this Element.
+        """
+        return self._wait_until_exists_or_not(True, wait_in_seconds)
+
+    def wait_until_not_exists(self, wait_in_seconds=None):
+        """Wait until this Element no longer exists on the page.
+
+        :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
+        :type wait_in_seconds: int
+        :returns: this Element.
+        """
+        return self._wait_until_exists_or_not(False, wait_in_seconds)
+
+    def _exists_for_wait(self, *args, **kwargs):
+        """Wrapper for exists() which takes args, kwargs and does nothing with them
+
+        :returns: this Element.
+        """
+        return self.exists()
+
+    def exists(self):
+        """Check if this Element exists on the page.
+
+        :returns: True if it exists, False otherwise.
+        """
+        try:
+            self.get_web_element()
+            return True
+        except NonExistentElement:
+            return False
+
     def send_keys(self, keys):
         # this docstring format is required to handle the decorator
         """
@@ -190,6 +249,7 @@ class Element(object):
         return self
 
     def click(self):
+        # this docstring format is required to handle the decorator
         """
         click()
         Click on this Element

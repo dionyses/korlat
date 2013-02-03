@@ -19,7 +19,11 @@ w = WebApp(webdriver.Chrome(chromedriver), AppUrl("www.google.com"))
 c = Google(w)
 
 w.go_to()
-c.get("search_box").send_keys("asdf")
+import time
+time.sleep(10)
+print "start!"
+c.get("search_box").wait_until_exists() \
+    .send_keys("asdf")
 c.get("id_template") \
     .set_content(["gbqfq"]) \
     .send_keys("1")
