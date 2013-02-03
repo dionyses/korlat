@@ -174,6 +174,10 @@ class Element(object):
         else:
             return self._identifier % tuple(self.content)
 
+    def __str__(self):
+        # TODO: fill with other usefull properties
+        return "Identifier: %s\n" % self.get_identifier()
+
     def _wait_until_exists_or_not(self, exists, wait_in_seconds=None):
         """Wait until this Element exists or not.
 
@@ -221,6 +225,8 @@ class Element(object):
         """
         return self.exists()
 
+    # methods which return bool
+
     def exists(self):
         """Check if this Element exists on the page.
 
@@ -232,11 +238,91 @@ class Element(object):
         except NonExistentElement:
             return False
 
-    def send_keys(self, keys):
-        # this docstring format is required to handle the decorator
+    def is_displayed(self):
+        """Check if this Element is displayed (visible.)
+
+        .. note::
+            if this Element does not exist, then False is still returned.
+
+        :returns: True if it is displayed, False otherwise.
         """
-        send_keys(keys)
-        Send the keys to this Element
+        try:
+            return self.get_web_element().is_displayed()
+        except NonExistentElement:
+            return False
+
+    def is_enabled(self):
+        """Check if this Element is enabled.
+
+        .. note::
+            if this Element does not exist, a NonExistentElement exception is raised.
+
+        :returns: True if it is enabled, False otherwise.
+        """
+        return self.get_web_element().is_enabled()
+
+    def is_selected(self):
+        """Check if this Element is selected.
+
+        .. note::
+            if this Element does not exist, a NonExistentElement exception is raised.
+
+        :returns: True if it is selected, False otherwise.
+        """
+        return self.get_web_element().is_selected()
+
+    # methods which return something (not Element)
+
+    def get_location(self):
+        """Get the location of this Element.
+
+        :returns: a dict of {str: int} containing the keys 'x' and 'y'
+        """
+       return self.get_web_element().location
+
+    def get_size(self):
+        """Get the size of this Element.
+
+        :returns: a dict of {str: int} containing the keys 'width' and 'height'
+        """
+        return self.get_web_element().size
+
+    def get_text(self):
+        """Get the html text of this Element.
+
+        :returns: the text of this Element.
+        """
+        return self.get_web_element().text
+
+    def get_tag_name(self):
+        """Get the tag name of this Element.
+
+        :returns: the tag name of this Element.
+        """
+        return self.get_web_element().tag_name
+
+    def get_attribute(self, name):
+        """Get the value of attribute for this Element.
+
+        :param name: the name to find the value for.
+        :type name: str
+        :returns: the value of the found attribute.  if the attribute does not exist None is returned.
+        """
+        return self.get_web_element().get_attribute(name)
+
+    def get_css_value(self, prop):
+        """Get the value of the css property for this Element.
+
+        :param prop: the property to find the value for.
+        :type prop: str
+        :returns: the value of the found property.  if the property does not exist None is returned.
+        """
+        return self.get_web_element().value_of_css_property(prop)
+
+    # method which return Element
+
+    def send_keys(self, keys):
+        """Send the keys to this Element.
 
         .. note::
             we don't use the synonym 'type' to avoid confusion with python's keyword 'type'.
@@ -249,17 +335,26 @@ class Element(object):
         return self
 
     def click(self):
-        # this docstring format is required to handle the decorator
-        """
-        click()
-        Click on this Element
+        """Click on this Element.
 
         :returns: this Element.
         """
         self.get_web_element().click()
         return self
 
-    def __str__(self):
-        # TODO: fill with other usefull properties
-        return "Identifier: %s\n" % self.get_identifier()
+    def clear(self):
+        """Clear this Element.
+
+        :returns: this Element.
+        """
+        self.get_web_element().clear()
+        return self
+
+    def submit(self):
+        """Submit this Element.
+
+        :returns: this Element.
+        """
+        self.get_web_element().submit()
+        return self
 

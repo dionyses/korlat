@@ -19,11 +19,15 @@ w = WebApp(webdriver.Chrome(chromedriver), AppUrl("www.google.com"))
 c = Google(w)
 
 w.go_to()
+print "if you want, go back now!"
 import time
-time.sleep(10)
+time.sleep(2)
 print "start!"
-c.get("search_box").wait_until_exists() \
-    .send_keys("asdf")
+print c.get("search_box").wait_until_exists() \
+    .send_keys("asdf") \
+    .get_location()
+print c.get("search_box").get_size()
+print c.get("search_box").get_tag_name()
 c.get("id_template") \
     .set_content(["gbqfq"]) \
     .send_keys("1")
