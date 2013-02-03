@@ -19,13 +19,13 @@ w = WebApp(webdriver.Chrome(chromedriver), AppUrl("www.google.com"))
 c = Google(w)
 
 w.go_to()
-c.get("search_box").type("asdf")
+c.get("search_box").send_keys("asdf")
 c.get("id_template") \
     .set_content(["gbqfq"]) \
-    .type("1")
+    .send_keys("1")
 
-c.get("search_box").type("qqq")
+c.get("search_box").send_keys("qqq")
 c.get("id_template").click() \
-    .type("bob")
+    .send_keys("bob")
 
 w.driver.quit()

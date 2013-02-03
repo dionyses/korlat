@@ -1,23 +1,44 @@
 from selenium.common.exceptions import NoSuchElementException
 
+from common.decorator import rethrow_webdriverexception
 from container import Container
 from core.strategy import xpath_of, ID, XPATH
-from exception.nonexistentelement import NonExistentElement
-from exception.unknownstrategy import UnknownStrategy
+from exception import NonExistentElement, UnknownStrategy
 
 
 class Element(object):
     """Element is the basic atomic handle to an object
 
-    :param container_or_web_app: Either the abstraction :class:`container` which holds this element or the application :class:`web_app`.
-    :type container_or_web_app: :class:`container` or :class:`web_app`
-    :param strategy: The lookup strategy used to locate this element.
+    :param container_or_web_app: either the abstraction :class:`Container` which holds this element or the application :class:`WebApp`.
+    :type container_or_web_app: :class:`Container` or :class:`WebApp`
+    :param strategy: the lookup strategy used to locate this element.
     :type strategy: :py:const:`strategy`
+    :param identifier: the identifier used to locate this element.  this parameter may be templated using python templating.
+    :type identifier: str
+    :param label: the label (name) of this element.
+    :type label: str
 
-    :var label: the label of this element (used in reference to :class:`container`.)
-    :var strategy: the strategy
-    :var link: TODO
-    :var links: TODO
+    >>> # build a templated element
+    >>> e = Element(my_web_app, strategy.ID, "button_%d")
+    >>> e.set_content(5).get_identifier()
+    button_5
+
+    >>> # build an element in a container
+    >>> e = Element(my_container, strategy.XPATH, "//div[contains(@class, 'test')]", "TEST")
+    >>> my_container.get("TEST").click()
+
+    Usage clarficiation:
+        1. Access documented instace variables simply through direct dot syntax.
+        2. Never set documeneted instance variables directly; use setters.
+        3. Don't get/set private (_var) instance variables (these are left un-documented.)
+
+    :var label: the label of this element (used in reference to :class:`Container`.)
+    :var strategy: the strategy used to locate this element.
+    :var required: whether this element is required to be displayed in its :class:`Container`.  can be None.
+    :var parent: the parent element to this element.  can be None.
+    :var link: the :class:`Container` this element links to.  can be None.
+    :var links: the map of :class:`Container` s this element links to.
+    :var content: the filler content used to populate the identifier (when applicable.)
     """
     def __init__(self, container_or_web_app, strategy, identifier, label=None):
         super(Element, self).__init__()
@@ -40,22 +61,82 @@ class Element(object):
     def set_required(self, is_required):
         """Set this element as required
 
-        A required element is one that you expect to be displayed in the containing :class:`container`.
+        A required element is one that you expect to be displayed in the containing :class:`Container`.
 
         :param is_required: whether this element is required or not
         :type is_required: bool
-
+        :returns: this Element.
         """
         assert isinstance(is_required, bool)
         self.required = is_required
         return self
 
     def set_parent(self, parent_element):
+        """Set this element's parent
+
+        An element with a parent will be located based off of the parent's identifier + this element's identifier.
+        Element's do not need to share the same strategy to be used with this mechanism.
+
+        >>> # parented element location
+        >>> p = Element(my_web_app, strategy.ID, "login-form")
+        >>> e = Element(my_web_app, strategy.XPATH, "/input[@type='text']").set_parent(p)
+        >>> e.get_identifier()
+        //*[@id='login-form']/input[@type='text']
+
+        :param parent_element: the parent to this element.
+        :type parent_element: :class:`Element`
+        :returns: this Element.
+        """
         assert isinstance(parent_element, Element)
         self.parent = parent_element
-        return self.parent
+        return self
+
+    def set_link(self, link):
+        """Set this element's link
+
+        Used when clicking on an element results in a container becoming displayed.
+        The resultant container is defined via link.
+
+        :param link: the :class:`Container` this element links to.
+        :type link: :class:`Container`
+        :returns: this Element.
+        """
+        assert isinstance(container, Container)
+        self.link = container
+        return self
+
+    def set_link(self, key, container):
+        """Set this element's link for the key
+
+        Used when clicking on an element results in one of many containers becoming displayed.
+        The resultant container is defined via key-link mapping.
+
+        :param key: the key to map this link under.
+        :type key: str
+        :param link: the :class:`Container` this element links to.
+        :type link: :class:`Container`
+        :returns: this Element.
+        """
+        assert isinstance(key, str)
+        assert isinstance(container, Container)
+        self.links[key] = container
+        return self
 
     def set_content(self, contents):
+        """Set the content used to fill this element's templated identifier
+
+        >>> e = Element(my_web_app, strategy.ID, "button_%s")
+        >>> e.set_content("login").get_identifier()
+        button_login
+
+        >>> e = Element(my_web_app, strategy.ID, "button_%s_%d")
+        >>> e.set_content(["login", 5]).get_identifier()
+        button_login_5
+
+        :param contents: the content or list of contents to fill with.
+        :type contents: list or object
+        :returns: this Element.
+        """
         if isinstance(contents, list):
             self.content = contents
         else:
@@ -64,6 +145,12 @@ class Element(object):
         return self
 
     def get_web_element(self):
+        """Find the WebElement represented by this Element on the page.
+
+        :returns: the selenium :class:`WebElement` found on the page.
+        :raises: :class:`NonExistentElement`
+        :raises: :class:`UnknownStrategy`
+        """
         if self.web_app.wait_delegate is not None:
             self.web_app.wait_delegate.wait()
 
@@ -73,21 +160,49 @@ class Element(object):
             elif self.strategy == ID:
                 return self.web_app.driver.find_element_by_id(self.get_identifier())
         except NoSuchElementException:
-            raise NonExistentElement(self.get_identifier())
+            raise NonExistentElement(str(self))
 
         raise UnknownStrategy(self.strategy)
 
     def get_identifier(self):
+        """Get the identifier for this Element.
+
+        :returns: the identifier used to locate this Element.
+        """
         if self.parent is not None:
             return xpath_of(self.parent.strategy, self.parent.get_identifier()) + xpath_of(self.strategy, self._identifier, self.content)
         else:
             return self._identifier % tuple(self.content)
 
-    def type(self, keys):
+    @rethrow_webdriverexception
+    def send_keys(self, keys):
+        # this docstring format is required to handle the decorator
+        """
+        send_keys(keys)
+        Send the keys to this Element
+
+        .. note::
+            we don't use the synonym 'type' to avoid confusion with python's keyword 'type'.
+
+        :param keys: the keys to send.
+        :type keys: str
+        :returns: this Element.
+        """
         self.get_web_element().send_keys(keys)
         return self
 
+    @rethrow_webdriverexception
     def click(self):
+        """
+        click()
+        Click on this Element
+
+        :returns: this Element.
+        """
         self.get_web_element().click()
         return self
+
+    def __str__(self):
+        # TODO: fill with other usefull properties
+        return "Identifier: %s\n" % self.get_identifier()
 
