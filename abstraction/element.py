@@ -1,6 +1,5 @@
 from selenium.common.exceptions import NoSuchElementException
 
-from common.decorator import rethrow_webdriverexception
 from container import Container
 from core.strategy import xpath_of, ID, XPATH
 from exception import NonExistentElement, UnknownStrategy
@@ -174,7 +173,6 @@ class Element(object):
         else:
             return self._identifier % tuple(self.content)
 
-    @rethrow_webdriverexception
     def send_keys(self, keys):
         # this docstring format is required to handle the decorator
         """
@@ -191,7 +189,6 @@ class Element(object):
         self.get_web_element().send_keys(keys)
         return self
 
-    @rethrow_webdriverexception
     def click(self):
         """
         click()
