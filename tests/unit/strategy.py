@@ -7,6 +7,9 @@ class Tests(unittest.TestCase):
     def setUp(self):
         pass
 
+    def test_xpath(self):
+        self.assertEqual("//*[@id='element_id']", xpath_of(XPATH, "//*[@id='element_id']"))
+
     def test_id(self):
         self.assertEqual("//*[@id='element_id']", xpath_of(ID, "element_id", []))
         self.assertEqual("//*[@id='element_x_id']", xpath_of(ID, "element_%s_id", ["x"]))
