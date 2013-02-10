@@ -1,26 +1,69 @@
 
 
 class Container(object):
+    """Container represents an area or collection in the application of Elements and Widgets.
+
+    :param web_app: the application :class:`WebApp` this Container is relevant to.
+    :type web_app: :class:`WebApp`
+
+    Usage clarification:
+        1. Access documented instance variables simply through direct dot syntax.
+        2. Never set documented instance variables directly; use setters.
+        3. Don't get/set private (_var) instance variables (these are left un-documented.)
+
+    :var web_app: the :class:`WebApp` context this Container exists in.
+    """
     def __init__(self, web_app):
         super(Container, self).__init__()
         self.web_app = web_app
         self._elements = {}
-        self.build_elements()
+        self._build_elements()
 
-    def build_elements(self):
+    def _build_elements(self):
+        """Populate this Container's Elements.
+
+        .. note::
+            this method must be overridden
+
+        >>> class SimpleContainer(Container)
+        >>>     def _build_elements(self):
+        >>>         self.put(Element(self, ID, "test_id", "test_label"))
+
+        """
         raise NotImplementedError()
 
     def put(self, element):
+        """Put an Element into this Container.
+
+        :param element: the **labelled** :class:`Element` to add.
+        :type element: :class:`Element`
+        :result: element is added this Container's collection of elements, under the key element.label.  if this Container already had an element keyed by the element.label, then it is replaced.
+        :returns: this Container.
+        """
         assert element is not None
         assert element.label is not None and len(element.label) > 0
         self._elements[element.label] = element
         return self
 
     def get(self, label):
+        """Get the Element from this Container.
+
+        :param label: the label to find the element by.
+        :type label: str
+        :returns: the :class:`Element` found to be keyed by label.  if one cannot be found, then KeyError is raised.
+        """
         assert label is not None and len(label) > 0
         return self._elements[label]
 
     def get_elements(self, clss=None, required=None):
+        """Get the (sub-)set of Elements in this Container.
+
+        :param clss: the specific class of :class:`Element` to get.
+        :type clss: a sub-class of :class:`Element`
+        :param required: include only required or not required Elements
+        :type required: bool
+        :returns: the list of :class:`Element` in this Container which meet the specified criteria.  unspecified criteria are ignored.
+        """
         l = []
 
         if clss is not None:
