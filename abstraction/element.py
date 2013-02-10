@@ -3,6 +3,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from container import Container
 from core.strategy import xpath_of, ID, XPATH
+from core.webapp import WebApp
 from exception import NonExistentElement, UnknownStrategy
 
 
@@ -42,6 +43,7 @@ class Element(object):
     """
     def __init__(self, container_or_web_app, strategy, identifier, label=None):
         super(Element, self).__init__()
+        assert isinstance(container_or_web_app, Container) or isinstance(container_or_web_app, WebApp)
 
         if isinstance(container_or_web_app, Container):
             self.web_app = container_or_web_app.web_app
@@ -205,18 +207,28 @@ class Element(object):
 
         :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
         :type wait_in_seconds: int
-        :returns: this Element.
+        :returns: True if it **does** exist after the wait, False otherwise.
         """
-        return self._wait_until_exists_or_not(True, wait_in_seconds)
+        try:
+            self._wait_until_exists_or_not(True, wait_in_seconds)
+        except TimeoutException:
+            pass
+        finally:
+            return self.exists()
 
     def wait_until_not_exists(self, wait_in_seconds=None):
         """Wait until this Element no longer exists on the page.
 
         :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
         :type wait_in_seconds: int
-        :returns: this Element.
+        :returns: True if it **does not** exist after the wait, False otherwise.
         """
-        return self._wait_until_exists_or_not(False, wait_in_seconds)
+        try:
+            self._wait_until_exists_or_not(False, wait_in_seconds)
+        except TimeoutException:
+            pass
+        finally:
+            return not self.exists()
 
     def _exists_for_wait(self, *args, **kwargs):
         """Wrapper for exists() which takes args, kwargs and does nothing with them
@@ -241,21 +253,12 @@ class Element(object):
     def is_displayed(self):
         """Check if this Element is displayed (visible.)
 
-        .. note::
-            if this Element does not exist, then False is still returned.
-
         :returns: True if it is displayed, False otherwise.
         """
-        try:
-            return self.get_web_element().is_displayed()
-        except NonExistentElement:
-            return False
+        return self.get_web_element().is_displayed()
 
     def is_enabled(self):
         """Check if this Element is enabled.
-
-        .. note::
-            if this Element does not exist, a NonExistentElement exception is raised.
 
         :returns: True if it is enabled, False otherwise.
         """
@@ -264,21 +267,18 @@ class Element(object):
     def is_selected(self):
         """Check if this Element is selected.
 
-        .. note::
-            if this Element does not exist, a NonExistentElement exception is raised.
-
         :returns: True if it is selected, False otherwise.
         """
         return self.get_web_element().is_selected()
 
-    # methods which return something (not Element)
+    # methods which return something (other than Element)
 
     def get_location(self):
         """Get the location of this Element.
 
         :returns: a dict of {str: int} containing the keys 'x' and 'y'
         """
-       return self.get_web_element().location
+        return self.get_web_element().location
 
     def get_size(self):
         """Get the size of this Element.
@@ -290,7 +290,7 @@ class Element(object):
     def get_text(self):
         """Get the html text of this Element.
 
-        :returns: the text of this Element.
+        :returns: the (trimmed) text of this Element.
         """
         return self.get_web_element().text
 
@@ -309,6 +309,13 @@ class Element(object):
         :returns: the value of the found attribute.  if the attribute does not exist None is returned.
         """
         return self.get_web_element().get_attribute(name)
+
+    def get_value(self):
+        """Get the value for this Element.
+
+        :returns: the value of this Element.  if there is no value None is returned.
+        """
+        return self.get_web_element().get_attribute("value")
 
     def get_css_value(self, prop):
         """Get the value of the css property for this Element.

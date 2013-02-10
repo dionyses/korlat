@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <script>
+            document.increment = 1;
+            function clickButton() {
+                document.getElementById("change-label").innerHTML = document.increment++;
+            };
+            function startTiming() {
+                setTimeout(function() {
+                        var newNode = document.createElement("label");
+                        newNode.setAttribute("id", "new-label");
+                        newNode.innerHTML = "new node";
+                        document.getElementById("root").appendChild(newNode);
+                        setTimeout(function() {
+                            document.getElementById("root").removeChild(document.getElementById("new-label"));
+                        }, 3000
+                        );
+                    }, 3000
+                );
+            };
+        </script>
+    </head>
+    <body>
+        <div id='root' class='root-class' style='z-index: 0;'>
+            <input type='text' id='text-input' class='text-input-class' style='z-index: 1; width: 150; height: 25; left: 1; top: 50; position: fixed;'></input>
+            <input type='button' id='button-input' class='button-input-class' value='button' onclick='clickButton()'></input>
+            <label id='change-label' class='change-label-class'>0</label>
+            <label id='label' class='label-class'> Test Label </label>
+            <input type='checkbox' id='checkbox-input-1' class='checkbox-input-class'></input>
+            <input type='checkbox' id='checkbox-input-2' class='checkbox-input-class' checked="yes" disabled></input>
+            <label id='hidden-label' class='hidden-label-class' style='display: none;'>Hidden</label>
+            <input type='button' id='timing-button' onclick='startTiming()'></input>
+        </div>
+    <body>
+<html>

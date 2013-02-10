@@ -7,7 +7,6 @@ from selenium import webdriver
 from abstraction.element import Element
 from abstraction.container import Container
 from core.webapp import WebApp
-from core.appurl import AppUrl
 from core import strategy
 from google import Google
 
@@ -15,7 +14,7 @@ chromedriver = "/home/dionyses/Downloads/drivers/chromedriver"
 environ["webdriver.chrome.driver"] = chromedriver
 
 
-w = WebApp(webdriver.Chrome(chromedriver), AppUrl("www.google.com"))
+w = WebApp(webdriver.Chrome(chromedriver), "http://www.google.com")
 c = Google(w)
 
 w.go_to()

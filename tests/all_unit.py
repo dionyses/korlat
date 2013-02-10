@@ -3,8 +3,13 @@ import unittest
 
 sys.path.append("/home/dionyses/projects/shelobpy/")
 
-from core.strategy import StrategyTests
+from unit import strategy, element
 
 
-suite = unittest.TestLoader().loadTestsFromTestCase(StrategyTests)
-unittest.TextTestRunner(verbosity=2).run(suite)
+suites = [
+    strategy.suite(),
+    element.suite(),
+]
+
+all_unit_tests = unittest.TestSuite(suites)
+unittest.TextTestRunner(verbosity=2).run(all_unit_tests)
