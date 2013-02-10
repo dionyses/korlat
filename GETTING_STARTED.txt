@@ -1,0 +1,8 @@
+Constructing an AUT abstraction:
+There are several objects used in shelobpy to help you make an abstaction of an application.  Although I won't say much about it, you generally want to abstract your application for the same reasons you use software development paradigms such as OO.  It helps you to break an AUT down into manageable pieces.  Each piece defines the behaviours relevant to itself and hides away the details.
+
+The most important unit you'll be abstracting from is Element.  This is more or less the equivalent to a single node in the DOM.  Most of the time it is a leaf node in particular, but this is more a rule of thumb than a constraint.  The Element abstraction acts as a handle to an element on the AUT, giving you control to the behaviours of that element (think "click", "type", etc).
+
+The next abstracting unit is the Widget.  A Widget is very much like an Element, however, in normally encapsulates a set of Elements.  In other words, a Widget is comprised of multiple, sub-Elements.  Just as with an Element, a Widget gives you control of the behaviours applicable to that widget on the AUT.  A typical example is a <table>, which is comprised of <tr> and <td> elements (and possibly others).  The TableWidget may define behavious such as "get_row" or "get_cell".
+
+Where the previous Element and Widget handle fundamental controls on the application, a Container is used to hold a collection of these controls.  The usage of a Container in abstracting your AUT is very much situational; sometimes an entire page may be a Container, however other times you may need to use several Containers to finally abstract a single page.  When using the Container, just do what makes sense, keeping in mind a Container holds a set of Elements and Widgets.
