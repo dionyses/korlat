@@ -22,8 +22,8 @@ print "if you want, go back now!"
 import time
 time.sleep(2)
 print "start!"
-print c.get("search_box").wait_until_exists() \
-    .send_keys("asdf") \
+c.get("search_box").wait_until_exists()
+c.get("search_box").send_keys("asdf") \
     .get_location()
 print c.get("search_box").get_size()
 print c.get("search_box").get_tag_name()

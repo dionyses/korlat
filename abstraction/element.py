@@ -1,3 +1,5 @@
+from time import sleep
+
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -33,6 +35,7 @@ class Element(object):
         2. Never set documeneted instance variables directly; use setters.
         3. Don't get/set private (_var) instance variables (these are left un-documented.)
 
+    :var web_app: the :class:`WebApp` this Element belongs to.
     :var label: the label of this element (used in reference to :class:`Container`.)
     :var strategy: the strategy used to locate this element.
     :var required: whether this element is required to be displayed in its :class:`Container`.  can be None.
@@ -93,36 +96,70 @@ class Element(object):
         self.parent = parent_element
         return self
 
-    def set_link(self, link):
-        """Set this element's link
+    def set_link(self, container, key=None):
+        """Set a link for this Element
 
-        Used when clicking on an element results in a container becoming displayed.
-        The resultant container is defined via link.
+        Used when clicking on an element results in one or many containers becoming displayed.
+        The resultant Containers may be defined via key-link mapping.
+
+        >>> e = Element(my_web_app, strategy.ID, "login-form").set_link(container_a)
+        >>> e.link
+        container_a
+        >>> e.links
+        {}
+        >>> e.set_link(container_b, "b")
+        >>> e.link
+        container_a
+        >>> e.links["b"]
+        container_b
 
         :param link: the :class:`Container` this element links to.
         :type link: :class:`Container`
-        :returns: this Element.
-        """
-        assert isinstance(container, Container)
-        self.link = container
-        return self
-
-    def set_link(self, key, container):
-        """Set this element's link for the key
-
-        Used when clicking on an element results in one of many containers becoming displayed.
-        The resultant container is defined via key-link mapping.
-
-        :param key: the key to map this link under.
+        :param key: if keyed, the key to map this link under.
         :type key: str
-        :param link: the :class:`Container` this element links to.
-        :type link: :class:`Container`
         :returns: this Element.
         """
-        assert isinstance(key, str)
         assert isinstance(container, Container)
-        self.links[key] = container
+
+        if key is None:
+            self.link = container
+        else:
+            assert isinstance(key, str)
+            self.links[key] = container
+
         return self
+
+    def go_to_link(self, key=None):
+        """Go to the link represented by this Element.
+
+        This performs a 'click' operation on this Element.  If a new window/tab is opened
+        as a result then it is tracked in the :class:`WebApp`.  In this case, if this Element
+        has a label then that label is the key identifying the window.  If this Element doesn't
+        have a label then a unique one is generated (see next_window_key() from :class:`WebApp`).
+
+        :param key: if keyed, the key to retrieve this link from.
+        :type key: str
+        :returns: the :class:`Container` for the link
+        """
+        if key is None:
+            assert self.link is not None
+        else:
+            # try to access the keyi so a KeyError is raised if it isn't there
+            self.links[key]
+
+        pre_handles = set(self.web_app.driver.window_handles)
+        self.click()
+        sleep(.5)
+        post_handles = set(self.web_app.driver.window_handles)
+        new_handles = post_handles.difference(pre_handles)
+
+        # a new tab/window was opened
+        if len(new_handles) > 0:
+            name = self.label if self.label is not None else self.web_app.next_window_key()
+            self.web_app.put_window(name, new_handles.pop()) \
+                .use_window(name)
+
+        return self.link if key is None else self.links[key]
 
     def set_content(self, contents):
         """Set the content used to fill this element's templated identifier

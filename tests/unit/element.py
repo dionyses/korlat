@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from mock import Mock
 from time import sleep
 import unittest
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from abstraction.container import Container
 from abstraction.element import Element
 from core.strategy import ID, XPATH
 from core.webapp import WebApp
@@ -168,6 +170,25 @@ class Tests(unittest.TestCase):
         self.assertFalse(new_label.wait_until_not_exists(2))
         # test that when the element finally dissappears until_not_exists returns True
         self.assertTrue(new_label.wait_until_not_exists(2))
+
+    def test_links(self):
+        mock_container_a = Mock()
+        mock_container_a.__class__ = Container
+        e = Element(self.w, ID, "nadda", "nadda") \
+            .set_link(mock_container_a)
+        self.assertTrue(mock_container_a is e.link)
+
+        mock_container_b = Mock()
+        mock_container_b.__class__ = Container
+        e.set_link(mock_container_b)
+        self.assertTrue(mock_container_b is e.link)
+
+        e.set_link(mock_container_a, "a")
+        self.assertTrue(mock_container_a is e.links["a"])
+        self.assertTrue(mock_container_b is e.link)
+
+        with self.assertRaises(KeyError):
+            e.links["b"]
 
 
 def suite():

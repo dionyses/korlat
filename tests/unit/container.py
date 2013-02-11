@@ -28,9 +28,9 @@ class SimpleContainer(Container):
 
 class Tests(unittest.TestCase):
     def setUp(self):
-        # don't even need to mock it
         self.mock_driver = Mock()
         self.mock_driver.__class__ = selenium.webdriver.remote.webdriver.WebDriver
+        self.mock_driver.window_handles = ["a"]
         self.web_app = WebApp(self.mock_driver, "http://coolsite.com")
 
     def test_unimplemented_build_elements(self):
