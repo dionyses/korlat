@@ -6,11 +6,17 @@ from usage import UsageErrorDriver
 
 
 DEFAULT_WAIT_IN_SECONDS = 10
+"""The default wait time to wait for an element.  10 seconds.
+"""
 MAIN_WINDOW = "main_window"
+"""The key locating the primary window.
+"""
 
 
 class WebApp(object):
-    """WebApp is the core entry point of Korlat, acting to identify your web application and to manage top level controls.
+    """WebApp is the core entry point of korlat, acting to identify your web application and to manage top level controls.
+
+    On creation, the WebApp will have a single window identified by MAIN_WINDOW.
 
     :param driver: the selenium.WebDriver instace.
     :type driver: :class:`WebDriver`
