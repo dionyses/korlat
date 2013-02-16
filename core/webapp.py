@@ -2,7 +2,6 @@ from time import sleep
 from urlparse import urlparse
 
 from waitdelegate import WaitDelegate
-from usage import UsageErrorDriver
 
 
 DEFAULT_WAIT_IN_SECONDS = 10
@@ -33,29 +32,24 @@ class WebApp(object):
     :var wait_delegate: the :class:`WaitDelegate` for this WebApp.
     :var default_wait: the default time to wait, in seconds.
     """
-    def __init__(self, driver, url, enable_usage_errors=True):
+    def __init__(self, driver, url):
         super(WebApp, self).__init__()
         # assuming the url must start with either
         #   http
         #   https
         #   file
         assert len(urlparse(url).scheme) > 3
+        self.driver = driver
+        self.url = url
+        self.wait_delegate = None
+        self.default_wait = DEFAULT_WAIT_IN_SECONDS
+
         # No implicit wait as waiting is controlled at the element
         # level via "wait_until_*"
-        driver.implicitly_wait(0)
-
-        if enable_usage_errors:
-            self.driver = UsageErrorDriver(driver)
-        else:
-            self.driver = driver
-
-        self.url = url
+        self.driver.implicitly_wait(0)
         assert len(self.driver.window_handles) == 1
         self._windows = {MAIN_WINDOW: self.driver.window_handles[0]}
         self._current_window = None
-
-        self.wait_delegate = None
-        self.default_wait = DEFAULT_WAIT_IN_SECONDS
 
     def _destroy_windows(self):
         while len(self.driver.window_handles) > 1:
