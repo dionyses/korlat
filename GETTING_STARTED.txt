@@ -1,5 +1,5 @@
 Constructing an AUT abstraction:
-There are several objects used in shelobpy to help you make an abstaction of an application.  Although I won't say much about it, you generally want to abstract your application for the same reasons you use software development paradigms such as OO.  It helps you to break an AUT down into manageable pieces.  Each piece defines the behaviours relevant to itself and hides away the details.
+There are several objects used in korlat to help you make an abstaction of an application.  Although I won't say much about it, you generally want to abstract your application for the same reasons you use software development paradigms such as OO.  It helps you to break an AUT down into manageable pieces.  Each piece defines the behaviours relevant to itself and hides away the details.
 
 The most important unit you'll be abstracting from is Element.  This is more or less the equivalent to a single node in the DOM.  Most of the time it is a leaf node in particular, but this is more a rule of thumb than a constraint.  The Element abstraction acts as a handle to an element on the AUT, giving you control to the behaviours of that element (think "click", "type", etc).
 

@@ -17,7 +17,7 @@ class Tests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.d = webdriver.Firefox()
-        self.w = WebApp(self.d, "file:///home/dionyses/projects/shelobpy/tests/guineapig.html")
+        self.w = WebApp(self.d, "file:///home/dionyses/projects/korlat/tests/guineapig.html")
         self.w.go_to()
 
     def setUp(self):

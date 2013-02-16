@@ -1,6 +1,6 @@
 from os import environ
 import sys
-sys.path.append("/home/dionyses/projects/shelobpy/")
+sys.path.append("/home/dionyses/projects/korlat/")
 
 from selenium import webdriver
 

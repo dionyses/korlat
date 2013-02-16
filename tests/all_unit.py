@@ -1,7 +1,7 @@
 import sys
 import unittest
 
-sys.path.append("/home/dionyses/projects/shelobpy/")
+sys.path.append("/home/dionyses/projects/korlat/")
 
 from unit import strategy, element, container, windowlinks
 
