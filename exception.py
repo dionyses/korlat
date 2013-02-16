@@ -10,3 +10,6 @@ class NonExistentElement(AutomationException):
 class UnknownStrategy(AutomationException):
     pass
 
+class UsageError(AutomationException):
+    pass
+
