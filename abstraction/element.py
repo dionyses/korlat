@@ -6,7 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from container import Container
 from core.strategy import xpath_of, ID, XPATH
 from core.webapp import WebApp
-from exception import NonExistentElement, UnknownStrategy
+from exception import UnknownStrategy
 
 
 class Element(object):
@@ -187,19 +187,16 @@ class Element(object):
         """Find the WebElement represented by this Element on the page.
 
         :returns: the selenium :class:`WebElement` found on the page.
-        :raises: :class:`NonExistentElement`
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         :raises: :class:`UnknownStrategy`
         """
         if self.web_app.wait_delegate is not None:
             self.web_app.wait_delegate.wait()
 
-        try:
-            if self.parent is not None or self.strategy == XPATH:
-                return self.web_app.driver.find_element_by_xpath(self.get_identifier())
-            elif self.strategy == ID:
-                return self.web_app.driver.find_element_by_id(self.get_identifier())
-        except NoSuchElementException:
-            raise NonExistentElement(str(self))
+        if self.parent is not None or self.strategy == XPATH:
+            return self.web_app.driver.find_element_by_xpath(self.get_identifier())
+        elif self.strategy == ID:
+            return self.web_app.driver.find_element_by_id(self.get_identifier())
 
         raise UnknownStrategy(self.strategy)
 
@@ -228,7 +225,7 @@ class Element(object):
         assert wait_in_seconds > 0
         ignoring = [
             StaleElementReferenceException,
-            NonExistentElement
+            NoSuchElementException
         ]
         wait = WebDriverWait(self.web_app.driver, wait_in_seconds, .25, ignoring)
 
@@ -236,6 +233,28 @@ class Element(object):
             wait.until(self._exists_for_wait)
         else:
             wait.until_not(self._exists_for_wait)
+
+        return self
+
+    def _wait_until_displayed_or_not(self, displayed, wait_in_seconds=None):
+        """Wait until this Element is displayed or not.
+
+        :returns: this Element.
+        """
+        if wait_in_seconds is None:
+            wait_in_seconds = self.web_app.default_wait
+
+        assert wait_in_seconds > 0
+        ignoring = [
+            StaleElementReferenceException,
+            NoSuchElementException
+        ]
+        wait = WebDriverWait(self.web_app.driver, wait_in_seconds, .25, ignoring)
+
+        if displayed:
+            wait.until(self._is_displayed_for_wait)
+        else:
+            wait.until_not(self._is_displayed_for_wait)
 
         return self
 
@@ -267,12 +286,49 @@ class Element(object):
         finally:
             return not self.exists()
 
-    def _exists_for_wait(self, *args, **kwargs):
-        """Wrapper for exists() which takes args, kwargs and does nothing with them
+    def wait_until_displayed(self, wait_in_seconds=None):
+        """Wait until this Element is displayed (visible) on the page.
 
-        :returns: this Element.
+        :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
+        :type wait_in_seconds: int
+        :returns: True if it **is** displayed after the wait, False otherwise.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
+        """
+        try:
+            self._wait_until_displayed_or_not(True, wait_in_seconds)
+        except TimeoutException:
+            pass
+        finally:
+            return self.is_displayed()
+
+    def wait_until_not_displayed(self, wait_in_seconds=None):
+        """Wait until this Element is no longer displayed (visible) on the page.
+
+        :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
+        :type wait_in_seconds: int
+        :returns: True if it **is not** displayed after the wait, False otherwise.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
+        """
+        try:
+            self._wait_until_displayed_or_not(False, wait_in_seconds)
+        except TimeoutException:
+            pass
+        finally:
+            return not self.is_displayed()
+
+    def _exists_for_wait(self, *args, **kwargs):
+        """Wrapper for exists() which takes args, kwargs and does nothing with them.
+
+        :returns: True if it exists, False otherwise.
         """
         return self.exists()
+
+    def _is_displayed_for_wait(self, *args, **kwargs):
+        """Wrapper for is_displayed() which takes args, kwargs and does nothing with them.
+
+        :returns: True if it is displayed, False otherwise.
+        """
+        return self.is_displayed()
 
     # methods which return bool
 
@@ -284,13 +340,14 @@ class Element(object):
         try:
             self.get_web_element()
             return True
-        except NonExistentElement:
+        except NoSuchElementException:
             return False
 
     def is_displayed(self):
         """Check if this Element is displayed (visible.)
 
         :returns: True if it is displayed, False otherwise.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().is_displayed()
 
@@ -298,6 +355,7 @@ class Element(object):
         """Check if this Element is enabled.
 
         :returns: True if it is enabled, False otherwise.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().is_enabled()
 
@@ -305,6 +363,7 @@ class Element(object):
         """Check if this Element is selected.
 
         :returns: True if it is selected, False otherwise.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().is_selected()
 
@@ -314,6 +373,7 @@ class Element(object):
         """Get the location of this Element.
 
         :returns: a dict of {str: int} containing the keys 'x' and 'y'
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().location
 
@@ -321,6 +381,7 @@ class Element(object):
         """Get the size of this Element.
 
         :returns: a dict of {str: int} containing the keys 'width' and 'height'
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().size
 
@@ -328,6 +389,7 @@ class Element(object):
         """Get the html text of this Element.
 
         :returns: the (trimmed) text of this Element.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().text
 
@@ -335,6 +397,7 @@ class Element(object):
         """Get the tag name of this Element.
 
         :returns: the tag name of this Element.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().tag_name
 
@@ -344,6 +407,7 @@ class Element(object):
         :param name: the name to find the value for.
         :type name: str
         :returns: the value of the found attribute.  if the attribute does not exist None is returned.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().get_attribute(name)
 
@@ -351,6 +415,7 @@ class Element(object):
         """Get the value for this Element.
 
         :returns: the value of this Element.  if there is no value None is returned.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().get_attribute("value")
 
@@ -360,6 +425,7 @@ class Element(object):
         :param prop: the property to find the value for.
         :type prop: str
         :returns: the value of the found property.  if the property does not exist None is returned.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         return self.get_web_element().value_of_css_property(prop)
 
@@ -374,6 +440,7 @@ class Element(object):
         :param keys: the keys to send.
         :type keys: str
         :returns: this Element.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         self.get_web_element().send_keys(keys)
         return self
@@ -382,6 +449,7 @@ class Element(object):
         """Click on this Element.
 
         :returns: this Element.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         self.get_web_element().click()
         return self
@@ -390,6 +458,7 @@ class Element(object):
         """Clear this Element.
 
         :returns: this Element.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         self.get_web_element().clear()
         return self
@@ -398,6 +467,7 @@ class Element(object):
         """Submit this Element.
 
         :returns: this Element.
+        :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
         self.get_web_element().submit()
         return self

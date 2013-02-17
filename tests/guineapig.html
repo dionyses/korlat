@@ -5,15 +5,25 @@
             function clickButton() {
                 document.getElementById("change-label").innerHTML = document.increment++;
             };
-            function startTiming() {
+            function startTimingExists() {
                 setTimeout(function() {
                         var newNode = document.createElement("label");
                         newNode.setAttribute("id", "new-label");
                         newNode.innerHTML = "new node";
                         document.getElementById("root").appendChild(newNode);
                         setTimeout(function() {
-                            document.getElementById("root").removeChild(document.getElementById("new-label"));
-                        }, 3000
+                                document.getElementById("root").removeChild(document.getElementById("new-label"));
+                            }, 3000
+                        );
+                    }, 3000
+                );
+            };
+            function startTimingDisplayed() {
+                setTimeout(function() {
+                        document.getElementById("hidden-label").style.display = "block";
+                        setTimeout(function() {
+                                document.getElementById("hidden-label").style.display = "none";
+                            }, 3000
                         );
                     }, 3000
                 );
@@ -33,7 +43,9 @@
             <a id='gp2n' target='_blank' href='guineapig2.html'>gp2 new tab</a>
             <a id='gp3s' href='guineapig3.html'>gp3 same tab</a>
             <a id='gp3n' target='_blank' href='guineapig3.html'>gp3 new tab</a>
-            <input type='button' id='timing-button' onclick='startTiming()'></input>
+            <input type='button' id='timing-exists-button' onclick='startTimingExists()'></input>
+            <input type='button' id='timing-displayed-button' onclick='startTimingDisplayed()'></input>
+            <label id='hidden-label' style='display: none;'>Hidden</label>
         </div>
     <body>
 <html>

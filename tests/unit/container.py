@@ -26,6 +26,12 @@ class SimpleContainer(Container):
             .put(SimpleElement(self, ID, "id_4", "id_4"))
 
 
+class NoRequiredContainer(Container):
+    def _build_elements(self):
+        self.put(Element(self, ID, "id_1", "id_1")) \
+            .put(Element(self, ID, "id_2", "id_2").set_required(False))
+
+
 class Tests(unittest.TestCase):
     def setUp(self):
         self.mock_driver = Mock()
@@ -83,6 +89,12 @@ class Tests(unittest.TestCase):
         l = c.get_elements(clss=SimpleElement, required=False)
         self.assertEquals(1, len(l))
         self.assertTrue(c.get("id_4") in l)
+
+    def test_wait_until_no_required(self):
+        c = NoRequiredContainer(self.web_app)
+
+        with self.assertRaises(AssertionError):
+            c.wait_until_visible()
 
 
 def suite():

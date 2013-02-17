@@ -4,13 +4,13 @@ from time import sleep
 import unittest
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
 from abstraction.container import Container
 from abstraction.element import Element
 from core.strategy import ID, XPATH
 from core.webapp import WebApp
-from exception import NonExistentElement
 
 
 class Tests(unittest.TestCase):
@@ -130,10 +130,10 @@ class Tests(unittest.TestCase):
         self.assertTrue(self.label_xpath_a.is_displayed())
         self.assertFalse(self.hidden_label_id.is_displayed())
 
-        with self.assertRaises(NonExistentElement):
+        with self.assertRaises(NoSuchElementException):
             self.label_relative_xpath.is_displayed()
 
-        with self.assertRaisesRegexp(NonExistentElement, str(self.non_existent_id)):
+        with self.assertRaises(NoSuchElementException):
             self.non_existent_id.is_displayed()
 
     def test_controls(self):
@@ -159,8 +159,8 @@ class Tests(unittest.TestCase):
         self.text_input_id.clear()
         self.assertEquals("", self.text_input_id.get_value())
 
-    def test_waiting(self):
-        Element(self.w, ID, "timing-button").click()
+    def test_wait_exists(self):
+        Element(self.w, ID, "timing-exists-button").click()
         new_label = Element(self.w, ID, "new-label")
         # test that when the element still hasn't appeared until_exists returns False
         self.assertFalse(new_label.wait_until_exists(2))
@@ -170,6 +170,33 @@ class Tests(unittest.TestCase):
         self.assertFalse(new_label.wait_until_not_exists(2))
         # test that when the element finally dissappears until_not_exists returns True
         self.assertTrue(new_label.wait_until_not_exists(2))
+
+    def test_wait_displayed(self):
+        Element(self.w, ID, "timing-displayed-button").click()
+        hidden_label = Element(self.w, ID, "hidden-label")
+        # test that when the element still hasn't appeared until_displayed returns False
+        self.assertFalse(hidden_label.wait_until_displayed(2))
+        # test that when the element finally appears until_displayed returns True
+        self.assertTrue(hidden_label.wait_until_displayed(2))
+        # test that when the element still hasn't dissappeared until_not_displayed returns False
+        self.assertFalse(hidden_label.wait_until_not_displayed(2))
+        # test that when the element finally dissappears until_not_displayed returns True
+        self.assertTrue(hidden_label.wait_until_not_displayed(2))
+
+        # also test wait_displayed when element isn't in DOM
+        Element(self.w, ID, "timing-exists-button").click()
+        new_label = Element(self.w, ID, "new-label")
+        # test that when the element still hasn't appeared until_exists returns False
+        with self.assertRaises(NoSuchElementException):
+            new_label.wait_until_displayed(2)
+
+        # test that when the element finally appears until_exists returns True
+        self.assertTrue(new_label.wait_until_displayed(2))
+        # test that when the element still hasn't dissappeared until_not_exists returns False
+        self.assertFalse(new_label.wait_until_not_displayed(2))
+        # test that when the element finally dissappears until_not_exists returns True
+        with self.assertRaises(NoSuchElementException):
+            new_label.wait_until_not_displayed(2)
 
     def test_links(self):
         mock_container_a = Mock()

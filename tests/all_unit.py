@@ -3,7 +3,8 @@ import unittest
 
 sys.path.append("/home/dionyses/projects/korlat/")
 
-from unit import strategy, element, container, windowlinks
+from unit import strategy, element, container, windowlinks, \
+    containervisibility
 
 
 suites = [
@@ -11,6 +12,7 @@ suites = [
     element.suite(),
     container.suite(),
     windowlinks.suite(),
+    containervisibility.suite(),
 ]
 
 all_unit_tests = unittest.TestSuite(suites)

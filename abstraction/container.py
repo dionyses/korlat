@@ -1,3 +1,4 @@
+from selenium.common.exceptions import NoSuchElementException
 
 
 class Container(object):
@@ -75,4 +76,48 @@ class Container(object):
             return l
         else:
             return [v for v in l if v.required == required]
+
+    def wait_until_visible(self, wait_in_seconds=None):
+        """Wait until this Container becomes visible (displayed)
+
+        Allow the Container to become visible.  To use, the Container must have at least
+        one required Element.
+
+        :param wait_in_seconds: the number of seconds to wait.  if unspecified, then the :class:`WebApp` default is used.
+        :type wait_in_seconds: int
+        :returns: True if it **is** visible after the wait, False otherwise.
+        :raises: AssertionError (if there are no required Elements in this Container)
+
+        .. note::
+            this method traps NoSuchElementExceptions, returning them as False
+        """
+        required_elements = self.get_elements(required=True)
+        assert len(required_elements) > 0
+
+        try:
+            return required_elements[0].wait_until_displayed(wait_in_seconds)
+        except NoSuchElementException:
+            return False
+
+    def wait_until_not_visible(self, wait_in_seconds=None):
+        """Wait until this Container goes away (becomes in-visible)
+
+        Allow the Container to 'go away'.  To use, the Container must have at least
+        one required Element.
+
+        :param wait_in_seconds: the number of seconds to wait.  if unspecified, then the :class:`WebApp` default is used.
+        :type wait_in_seconds: int
+        :returns: True if it **is not** visible after the wait, False otherwise.
+        :raises: AssertionError (if there are no required Elements in this Container)
+
+        .. note::
+            this method traps NoSuchElementExceptions, returning them as True
+        """
+        required_elements = self.get_elements(required=True)
+        assert len(required_elements) > 0
+
+        try:
+            return required_elements[0].wait_until_not_displayed(wait_in_seconds)
+        except NoSuchElementException:
+            return True
 

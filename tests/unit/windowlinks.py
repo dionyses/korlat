@@ -8,7 +8,6 @@ from abstraction.element import Element
 from abstraction.container import Container
 from core.strategy import ID, XPATH
 from core.webapp import WebApp, MAIN_WINDOW
-from exception import NonExistentElement
 
 
 class GP2(Container):
