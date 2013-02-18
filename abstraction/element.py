@@ -6,7 +6,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from container import Container
 from core.strategy import xpath_of, ID, XPATH
 from core.webapp import WebApp
-from exception import UnknownStrategy
+from exception import UnknownStrategy, CheckError
 
 
 class Element(object):
@@ -471,4 +471,38 @@ class Element(object):
         """
         self.get_web_element().submit()
         return self
+
+
+class CheckableElement(Element):
+    """CheckableElement can be used to add common checks (assertions) to Elements.
+
+    A common and useful unit test technique in UI testing is to check that a set of elements
+    appear nicely and can be interacted with.  For example:
+
+        1. Make sure all the labels are visible and are at least 10px by 10px.
+        2. Make sure all the checkboxes can be clicked, and clicking toggles the state between checked and unchecked.
+
+    For these situations, Checkable can be used to simplify the writing of these tests and to
+    consolidate the logic and operations by element type.
+    """
+    def __init__(self, container_or_web_app, strategy, identifier, label=None):
+        super(Widget, self).__init__(container_or_web_app, strategy, identifier, label)
+
+    def check_appearance(self):
+        """Override to assert this Element is layed out correctly.
+
+        :result: this Element is inspected in regards to its appearance.
+        :returns: this CheckableElement.
+        :raises: :class:`CheckError`
+        """
+        raise NotImplementedError()
+
+    def check_behaviour(self):
+        """Override to assert this Element can be used and interacted with correctly.
+
+        :result: this Element is inspected in regards to its behaviour.
+        :returns: this CheckableElement.
+        :raises: :class:`CheckError`
+        """
+        raise NotImplementedError()
 

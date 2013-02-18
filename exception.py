@@ -6,3 +6,7 @@ class AutomationException(Exception):
 class UnknownStrategy(AutomationException):
     pass
 
+
+class CheckError(AssertionError):
+    pass
+
