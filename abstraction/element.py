@@ -486,7 +486,7 @@ class CheckableElement(Element):
     consolidate the logic and operations by element type.
     """
     def __init__(self, container_or_web_app, strategy, identifier, label=None):
-        super(Widget, self).__init__(container_or_web_app, strategy, identifier, label)
+        super(CheckableElement, self).__init__(container_or_web_app, strategy, identifier, label)
 
     def check_appearance(self):
         """Override to assert this Element is layed out correctly.
