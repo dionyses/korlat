@@ -9,6 +9,8 @@ from abstraction.container import Container
 from core.strategy import ID, XPATH
 from core.webapp import WebApp, MAIN_WINDOW
 
+from tests import GUINEA_PIG
+
 
 class GP2(Container):
     def _build_elements(self):
@@ -24,7 +26,7 @@ class Tests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.d = webdriver.Firefox()
-        self.w = WebApp(self.d, "file:///home/dionyses/projects/korlat/tests/guineapig.html")
+        self.w = WebApp(self.d, GUINEA_PIG)
 
         self.gp2s = Element(self.w, ID, "gp2s", "gp2s_label") \
                         .set_link(GP2(self.w))

@@ -1,4 +1,4 @@
-from element import Element
+from korlat.abstraction.element import Element
 
 
 class Widget(Element):

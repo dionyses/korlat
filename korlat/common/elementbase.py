@@ -1,6 +1,6 @@
 
-from abstraction.element import CheckableElement
-from exception import CheckError, CheckEqualError, CheckAtLeastError
+from korlat.abstraction.element import CheckableElement
+from korlat.exception import CheckError, CheckEqualError, CheckAtLeastError
 
 
 class AestheticElement(CheckableElement):

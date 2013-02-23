@@ -7,6 +7,8 @@ from abstraction.element import Element
 from core.strategy import ID
 from core.webapp import WebApp
 
+from tests import GUINEA_PIG
+
 
 class SimpleContainerA(Container):
     def _build_elements(self):
@@ -24,7 +26,7 @@ class Tests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.d = webdriver.Firefox()
-        self.w = WebApp(self.d, "file:///home/dionyses/projects/korlat/tests/guineapig.html")
+        self.w = WebApp(self.d, GUINEA_PIG)
         self.w.go_to()
 
     @classmethod

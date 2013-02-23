@@ -6,11 +6,11 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
-from abstraction.container import Container
-from abstraction.element import Element
-from common.checkbox import Checkbox
-from core.strategy import ID, XPATH
-from core.webapp import WebApp
+from korlat.abstraction.container import Container
+from korlat.abstraction.element import Element
+from korlat.common.checkbox import Checkbox
+from korlat.core.strategy import ID, XPATH
+from korlat.core.webapp import WebApp
 
 
 class Tests(unittest.TestCase):

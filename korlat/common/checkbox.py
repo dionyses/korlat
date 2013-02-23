@@ -1,5 +1,5 @@
-from elementbase import AestheticElement
-from exception import CheckError
+from korlat.common.elementbase import AestheticElement
+from korlat.exception import CheckError
 
 
 class Checkbox(AestheticElement):

@@ -1,10 +1,10 @@
 import sys
 import unittest
 
-sys.path.append("/home/dionyses/projects/korlat/")
+sys.path.append("/home/dionyses/projects/korlat/korlat/")
 
-from unit import strategy, element, container, windowlinks, \
-    containervisibility
+from unit import strategy, element, container, \
+    windowlinks, containervisibility
 
 
 suites = [
