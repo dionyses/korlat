@@ -1,15 +1,13 @@
-from time import sleep
-
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support.wait import WebDriverWait
 
-from korlat.container import Container
-from korlat.core.strategy import xpath_of, ID, XPATH
+from container import Container
+from korlat.core.strategy import xpath_of, ID, TAG, XPATH
 from korlat.core.webapp import WebApp
 from korlat.exception import UnknownStrategy, CheckError
 
 
-class ElementLists(object):
+class ElementList(object):
     """ElementList is the basic atomic handle to a list of objects
 
     :param container_or_web_app: either the abstraction :class:`Container` which holds these elements or the application :class:`WebApp`.
@@ -119,6 +117,8 @@ class ElementLists(object):
             return self.web_app.driver.find_elements_by_xpath(self.get_identifier())
         elif self.strategy == ID:
             return self.web_app.driver.find_elements_by_id(self.get_identifier())
+        elif self.strategy == TAG:
+            return self.web_app.driver.find_elements_by_tag_name(self.get_identifier())
 
         raise UnknownStrategy(self.strategy)
 

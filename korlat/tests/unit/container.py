@@ -3,10 +3,10 @@ import unittest
 
 import selenium
 
-from abstraction.container import Container
-from abstraction.element import Element
-from core.strategy import ID
-from core.webapp import WebApp
+from korlat.abstraction.container import Container
+from korlat.abstraction.element import Element
+from korlat.core.strategy import ID
+from korlat.core.webapp import WebApp
 
 
 class SimpleElement(Element):

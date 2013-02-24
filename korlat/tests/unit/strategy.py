@@ -1,6 +1,6 @@
 import unittest
 
-from core.strategy import xpath_of, ID, XPATH
+from korlat.core.strategy import xpath_of, ID, XPATH
 
 
 class Tests(unittest.TestCase):

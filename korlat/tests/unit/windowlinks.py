@@ -4,12 +4,11 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from abstraction.element import Element
-from abstraction.container import Container
-from core.strategy import ID, XPATH
-from core.webapp import WebApp, MAIN_WINDOW
-
-from tests import GUINEA_PIG
+from korlat.abstraction.element import Element
+from korlat.abstraction.container import Container
+from korlat.core.strategy import ID, XPATH
+from korlat.core.webapp import WebApp, MAIN_WINDOW
+from korlat.tests import GUINEA_PIG
 
 
 class GP2(Container):

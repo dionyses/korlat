@@ -4,9 +4,9 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from selenium.webdriver.support.wait import WebDriverWait
 
 from container import Container
-from core.strategy import xpath_of, ID, XPATH
-from core.webapp import WebApp
-from exception import UnknownStrategy, CheckError
+from korlat.core.strategy import xpath_of, ID, TAG, XPATH
+from korlat.core.webapp import WebApp
+from korlat.exception import UnknownStrategy, CheckError
 
 
 class Element(object):
@@ -197,6 +197,8 @@ class Element(object):
             return self.web_app.driver.find_element_by_xpath(self.get_identifier())
         elif self.strategy == ID:
             return self.web_app.driver.find_element_by_id(self.get_identifier())
+        elif self.strategy == TAG:
+            return self.web_app.driver.find_element_by_tag_name(self.get_identifier())
 
         raise UnknownStrategy(self.strategy)
 
