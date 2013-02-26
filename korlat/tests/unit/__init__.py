@@ -5,3 +5,4 @@ import element
 import elementlist
 import strategy
 import windowlinks
+import unique

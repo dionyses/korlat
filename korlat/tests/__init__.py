@@ -4,7 +4,8 @@ GUINEA_PIG = "file:///home/dionyses/projects/korlat/korlat/tests/guineapig.html"
 
 import unit
 from unit import strategy, element, container, \
-    windowlinks, containervisibility, elementlist
+    windowlinks, containervisibility, elementlist, \
+    unique
 
 
 def all_unit():
@@ -15,6 +16,7 @@ def all_unit():
         container.suite(),
         windowlinks.suite(),
         containervisibility.suite(),
+        unique.suite(),
     ]
 
     all_unit_tests = unittest.TestSuite(suites)
