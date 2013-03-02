@@ -5,7 +5,7 @@ GUINEA_PIG = "file:///home/dionyses/projects/korlat/korlat/tests/guineapig.html"
 import unit
 from unit import strategy, element, container, \
     windowlinks, containervisibility, elementlist, \
-    unique
+    unique, util
 
 
 def all_unit():
@@ -17,8 +17,8 @@ def all_unit():
         windowlinks.suite(),
         containervisibility.suite(),
         unique.suite(),
+        util.suite(),
     ]
 
-    all_unit_tests = unittest.TestSuite(suites)
-    unittest.TextTestRunner(verbosity=2).run(all_unit_tests)
+    return unittest.TestSuite(suites)
 
