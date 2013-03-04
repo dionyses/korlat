@@ -2,7 +2,7 @@ import unittest
 
 GUINEA_PIG = "file:///home/dionyses/projects/korlat/korlat/tests/guineapig.html"
 
-import unit
+from korlat.tests import unit
 from unit import strategy, element, container, \
     windowlinks, containervisibility, elementlist, \
     unique, util

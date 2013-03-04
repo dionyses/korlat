@@ -7,5 +7,5 @@ setup(
               "korlat.core",
               "korlat.abstraction",
               "korlat.common",
-              "korlat.tests"],
+              "korlat.tests.unit"],
 )

@@ -4,7 +4,7 @@ import unittest
 from korlat.abstraction.element import Element
 from korlat.core.strategy import ID
 from korlat.core.webapp import WebApp
-from korlat.common.checkbox import Checkbox
+from korlat.common.objects import Checkbox
 from korlat.common.util import canonical
 
 

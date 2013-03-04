@@ -89,7 +89,7 @@ class Container(object):
         :raises: AssertionError (if there are no required Elements in this Container)
 
         .. note::
-            this method traps NoSuchElementExceptions, returning them as False
+            this method traps NoSuchElementExceptions, returning as False
         """
         required_elements = self.get_elements(required=True)
         assert len(required_elements) > 0
@@ -111,7 +111,7 @@ class Container(object):
         :raises: AssertionError (if there are no required Elements in this Container)
 
         .. note::
-            this method traps NoSuchElementExceptions, returning them as True
+            this method traps NoSuchElementExceptions, returning as True
         """
         required_elements = self.get_elements(required=True)
         assert len(required_elements) > 0
@@ -120,4 +120,23 @@ class Container(object):
             return required_elements[0].wait_until_not_displayed(wait_in_seconds)
         except NoSuchElementException:
             return True
+
+    def is_visible(self):
+        """Check if this Container is visible (displayed)
+
+        To use, the Container must have at least one required Element.
+
+        :returns: True if the container is visible, False otherwise.
+        :raises: AssertionError (if there are no required Elements in this Container)
+
+        .. note::
+            this method traps NoSuchElementExceptions, returning as False
+        """
+        required_elements = self.get_elements(required=True)
+        assert len(required_elements) > 0
+
+        try:
+            return required_elements[0].is_displayed()
+        except NoSuchElementException:
+            return False
 

@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 
 from korlat.abstraction.container import Container
 from korlat.abstraction.element import Element
-from korlat.common.checkbox import Checkbox
+from korlat.common.objects import Checkbox
 from korlat.core.strategy import ID, XPATH
 from korlat.core.webapp import WebApp
 
