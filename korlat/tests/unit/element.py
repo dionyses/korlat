@@ -137,6 +137,13 @@ class Tests(unittest.TestCase):
         with self.assertRaises(NoSuchElementException):
             self.non_existent_id.is_displayed()
 
+    def test_ignoring_states(self):
+        self.assertTrue(self.label_xpath_a.is_displayed(ignore=True))
+        self.assertFalse(self.hidden_label_id.is_displayed(ignore=True))
+        # now that we ignore, NoSuchElementException should not be thrown
+        self.assertFalse(self.label_relative_xpath.is_displayed(ignore=True))
+        self.assertFalse(self.non_existent_id.is_displayed(ignore=True))
+
     def test_controls(self):
         # click
         self.assertEquals("0", self.change_label_id.get_text())

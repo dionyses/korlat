@@ -1,6 +1,7 @@
 from time import sleep
 
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, \
+    StaleElementReferenceException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 
 from container import Container
@@ -271,8 +272,8 @@ class Element(object):
             self._wait_until_exists_or_not(True, wait_in_seconds)
         except TimeoutException:
             pass
-        finally:
-            return self.exists()
+
+        return self.exists()
 
     def wait_until_not_exists(self, wait_in_seconds=None):
         """Wait until this Element no longer exists on the page.
@@ -285,14 +286,16 @@ class Element(object):
             self._wait_until_exists_or_not(False, wait_in_seconds)
         except TimeoutException:
             pass
-        finally:
-            return not self.exists()
 
-    def wait_until_displayed(self, wait_in_seconds=None):
+        return not self.exists()
+
+    def wait_until_displayed(self, wait_in_seconds=None, ignore=False):
         """Wait until this Element is displayed (visible) on the page.
 
         :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
         :type wait_in_seconds: int
+        :param ignore: specify whether NoSuchElementExceptions should be ignored or not.  if ignored, a caught NoSuchElementException will return as False.
+        :type ignore: bool
         :returns: True if it **is** displayed after the wait, False otherwise.
         :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
@@ -300,14 +303,16 @@ class Element(object):
             self._wait_until_displayed_or_not(True, wait_in_seconds)
         except TimeoutException:
             pass
-        finally:
-            return self.is_displayed()
 
-    def wait_until_not_displayed(self, wait_in_seconds=None):
+        return self.is_displayed(ignore)
+
+    def wait_until_not_displayed(self, wait_in_seconds=None, ignore=False):
         """Wait until this Element is no longer displayed (visible) on the page.
 
         :param wait_in_seconds: the number of seconds to wait.  if unspecified then the :class:`WebApp` default is used.
         :type wait_in_seconds: int
+        :param ignore: specify whether NoSuchElementExceptions should be ignored or not.  if ignored, a caught NoSuchElementException will return as False.
+        :type ignore: bool
         :returns: True if it **is not** displayed after the wait, False otherwise.
         :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
@@ -315,8 +320,8 @@ class Element(object):
             self._wait_until_displayed_or_not(False, wait_in_seconds)
         except TimeoutException:
             pass
-        finally:
-            return not self.is_displayed()
+
+        return not self.is_displayed(ignore)
 
     def _exists_for_wait(self, *args, **kwargs):
         """Wrapper for exists() which takes args, kwargs and does nothing with them.
@@ -345,13 +350,21 @@ class Element(object):
         except NoSuchElementException:
             return False
 
-    def is_displayed(self):
+    def is_displayed(self, ignore=False):
         """Check if this Element is displayed (visible.)
 
+        :param ignore: specify whether NoSuchElementExceptions should be ignored or not.  if ignored, a caught NoSuchElementException will return as False.
+        :type ignore: bool
         :returns: True if it is displayed, False otherwise.
         :raises: :class:`selenium.common.exceptions.NoSuchElementException`
         """
-        return self.get_web_element().is_displayed()
+        if ignore:
+            try:
+                return self.get_web_element().is_displayed()
+            except NoSuchElementException:
+                return False
+        else:
+            return self.get_web_element().is_displayed()
 
     def is_enabled(self):
         """Check if this Element is enabled.

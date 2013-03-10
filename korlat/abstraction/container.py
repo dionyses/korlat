@@ -93,11 +93,7 @@ class Container(object):
         """
         required_elements = self.get_elements(required=True)
         assert len(required_elements) > 0
-
-        try:
-            return required_elements[0].wait_until_displayed(wait_in_seconds)
-        except NoSuchElementException:
-            return False
+        return required_elements[0].wait_until_displayed(wait_in_seconds, ignore=True)
 
     def wait_until_not_visible(self, wait_in_seconds=None):
         """Wait until this Container goes away (becomes in-visible)
@@ -115,11 +111,7 @@ class Container(object):
         """
         required_elements = self.get_elements(required=True)
         assert len(required_elements) > 0
-
-        try:
-            return required_elements[0].wait_until_not_displayed(wait_in_seconds)
-        except NoSuchElementException:
-            return True
+        return required_elements[0].wait_until_not_displayed(wait_in_seconds, ignore=True)
 
     def is_visible(self):
         """Check if this Container is visible (displayed)
@@ -134,9 +126,5 @@ class Container(object):
         """
         required_elements = self.get_elements(required=True)
         assert len(required_elements) > 0
-
-        try:
-            return required_elements[0].is_displayed()
-        except NoSuchElementException:
-            return False
+        return required_elements[0].is_displayed(ignore=True)
 
