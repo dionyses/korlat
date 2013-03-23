@@ -13,12 +13,12 @@ from korlat.tests import GUINEA_PIG
 
 class GP2(Container):
     def _build_elements(self):
-        self.put(Element(self, ID, "guineapig2", "guineapig2").set_required(True))
+        self.put(Element(self, ID, "guineapig2", "guineapig2"), True)
 
 
 class GP3(Container):
     def _build_elements(self):
-        self.put(Element(self, ID, "guineapig3", "guineapig3").set_required(True))
+        self.put(Element(self, ID, "guineapig3", "guineapig3"), True)
 
 
 class Tests(unittest.TestCase):

@@ -21,15 +21,15 @@ class EmptyContainer(Container):
 class SimpleContainer(Container):
     def _build_elements(self):
         self.put(Element(self, ID, "id_1", "id_1")) \
-            .put(Element(self, ID, "id_2", "id_2").set_required(True)) \
-            .put(Element(self, ID, "id_3", "id_3").set_required(False)) \
+            .put(Element(self, ID, "id_2", "id_2"), True) \
+            .put(Element(self, ID, "id_3", "id_3"), False) \
             .put(SimpleElement(self, ID, "id_4", "id_4"))
 
 
 class NoRequiredContainer(Container):
     def _build_elements(self):
         self.put(Element(self, ID, "id_1", "id_1")) \
-            .put(Element(self, ID, "id_2", "id_2").set_required(False))
+            .put(Element(self, ID, "id_2", "id_2"), False)
 
 
 class Tests(unittest.TestCase):

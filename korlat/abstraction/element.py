@@ -39,7 +39,6 @@ class Element(object):
     :var web_app: the :class:`WebApp` this Element belongs to.
     :var label: the label of this element (used in reference to :class:`Container`.)
     :var strategy: the strategy used to locate this element.
-    :var required: whether this element is required to be displayed in its :class:`Container`.  can be None.
     :var parent: the parent element to this element.  can be None.
     :var link: the :class:`Container` this element links to.  can be None.
     :var links: the map of :class:`Container` s this element links to.
@@ -58,24 +57,10 @@ class Element(object):
         self._identifier = identifier
         self.label = label
 
-        self.required = False
         self.parent = None
         self.link = None
         self.links = {}
         self.content = []
-
-    def set_required(self, is_required):
-        """Set this element as required
-
-        A required element is one that you expect to be displayed in the containing :class:`Container`.
-
-        :param is_required: whether this element is required or not
-        :type is_required: bool
-        :returns: this Element.
-        """
-        assert isinstance(is_required, bool)
-        self.required = is_required
-        return self
 
     def set_parent(self, parent_element):
         """Set this element's parent

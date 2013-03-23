@@ -11,14 +11,14 @@ from korlat.tests import GUINEA_PIG
 
 class SimpleContainerA(Container):
     def _build_elements(self):
-        self.put(Element(self, ID, "hidden-label", "hidden-label").set_required(True)) \
-            .put(Element(self, ID, "yadda", "yadda").set_required(False))
+        self.put(Element(self, ID, "hidden-label", "hidden-label"), True) \
+            .put(Element(self, ID, "yadda", "yadda"), False)
 
 
 class SimpleContainerB(Container):
     def _build_elements(self):
-        self.put(Element(self, ID, "new-label", "new-label").set_required(True)) \
-            .put(Element(self, ID, "yadda", "yadda").set_required(False))
+        self.put(Element(self, ID, "new-label", "new-label"), True) \
+            .put(Element(self, ID, "yadda", "yadda"), False)
 
 
 class Tests(unittest.TestCase):

@@ -33,17 +33,20 @@ class Container(object):
         """
         raise NotImplementedError()
 
-    def put(self, element):
+    def put(self, element, required=False):
         """Put an Element into this Container.
 
         :param element: the **labelled** :class:`Element` to add.
         :type element: :class:`Element`
+        :param required: whether this element is required or not.  a required element is one that is expected to be displayed in the container.
+        :type required: bool
         :result: element is added this Container's collection of elements, under the key element.label.  if this Container already had an element keyed by the element.label, then it is replaced.
         :returns: this Container.
         """
         assert element is not None
         assert element.label is not None and len(element.label) > 0
-        self._elements[element.label] = element
+        assert isinstance(required, bool)
+        self._elements[element.label] = (element, required)
         return self
 
     def get(self, label):
@@ -54,7 +57,7 @@ class Container(object):
         :returns: the :class:`Element` found to be keyed by label.  if one cannot be found, then KeyError is raised.
         """
         assert label is not None and len(label) > 0
-        return self._elements[label]
+        return self._elements[label][0]
 
     def get_elements(self, clss=None, required=None):
         """Get the (sub-)set of Elements in this Container.
@@ -65,17 +68,14 @@ class Container(object):
         :type required: bool
         :returns: the list of :class:`Element` in this Container which meet the specified criteria.  unspecified criteria are ignored.
         """
-        l = []
-
-        if clss is not None:
-            l = [v for v in self._elements.values() if isinstance(v, clss)]
+        if clss is not None and required is not None:
+            return [v[0] for v in self._elements.values() if isinstance(v[0], clss) and v[1] == required]
+        elif clss is not None:
+            return [v[0] for v in self._elements.values() if isinstance(v[0], clss)]
+        elif required is not None:
+            return [v[0] for v in self._elements.values() if v[1] == required]
         else:
-            l = [v for v in self._elements.values()]
-
-        if required is None:
-            return l
-        else:
-            return [v for v in l if v.required == required]
+            return [v[0] for v in self._elements.values()]
 
     def wait_until_visible(self, wait_in_seconds=None):
         """Wait until this Container becomes visible (displayed)
